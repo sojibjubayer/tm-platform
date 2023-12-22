@@ -1,70 +1,51 @@
-import { FaAd, FaAsterisk, FaCircle, FaCompass, FaHome, FaList, FaShoppingCart, FaTasks, FaUser } from "react-icons/fa";
+import { FaHome } from "react-icons/fa";
 import { NavLink, Outlet } from "react-router-dom";
 
 
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { DndProvider } from 'react-dnd'
 
-
-import { IoMdMenu } from "react-icons/io";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../providers/AuthProvider";
+import CreateTask from "../../components/CreateTask";
+import ListTask from "../../components/ListTask";
+
+import { Toaster } from "react-hot-toast";
 
 const Dashboard = () => {
-   
-    const{user} = useContext(AuthContext)
+
+    const { user } = useContext(AuthContext)
+    const [tasks, setTasks] = useState([])
+    console.log('task', tasks)
+
+    useEffect(() => {
+        setTasks(JSON.parse(localStorage.getItem('tasks')))
+    }, [])
 
     return (
 
-
-        <div className="flex flex-col md:flex-row">
-            <div className="md:w-64 md:min-h-screen bg-teal-400  md:mt-0">
-                <ul className="menu p-4  ">
-
-                    <li>
+        <DndProvider backend={HTML5Backend}>
+            <div className="flex flex-col ">
+                <Toaster />
+                <div className="  bg-teal-400  md:mt-0">
+                    <div className="menu p-2   flex flex-row items-center justify-center">
                         <img src={user?.photoURL} className="w-24 mx-auto rounded-full " alt="" />
-                    </li>
-                    <li className="my-2">
-                        <NavLink to="/dashboard/newTask">
-                            <FaUser></FaUser>
-                            Create New Task</NavLink>
-                    </li>
-                    <li className="my-3">
-                        <NavLink to="/dashboard/allDonationRequest">
-                            <FaAsterisk></FaAsterisk>
-                            Previous Task</NavLink>
-                    </li>
-                    <li>
-                        <NavLink to="/dashboard/contentManagement">
-                            <FaList></FaList>
-                            ToDo List</NavLink>
-                    </li>
-
-                    <li>
-                        <NavLink to="/dashboard/userHome">
-                        <FaList></FaList>
-                            OnGoing</NavLink>
-                    </li>
-
-                    <li className="my-3">
-                        <NavLink to="/dashboard/myDonationrequest">
-                            <FaTasks></FaTasks>
-                            Completed</NavLink>
-                    </li>
-                    <li >
-                        <NavLink to="/">
-                        <FaHome></FaHome>
+                        <NavLink to="/" className='flex flex-row items-center '>
+                            <FaHome></FaHome>
                             Home</NavLink>
-                    </li>
+                    </div>
+                </div>
+                <div className="flex flex-col  ">
+                    <div className="flex flex-col">
+                        <CreateTask tasks={tasks} setTasks={setTasks} />
+                        <ListTask tasks={tasks} setTasks={setTasks} />
+                    </div>
 
-
-
-
-                </ul>
+                </div>
             </div>
+        </DndProvider>
 
-            <div className="flex-1 p-8">
-                <Outlet></Outlet>
-            </div>
-        </div>
+
 
     );
 };
